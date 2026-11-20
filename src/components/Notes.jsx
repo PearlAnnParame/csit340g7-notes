@@ -1,6 +1,5 @@
 import NoteCard from './NoteCard.jsx'
-import { useState } from 'react'
-import { useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 const startingNotes = [
   {
@@ -22,6 +21,7 @@ function Notes() {
   })
     const [form, setForm] = useState({ title: '', body: '' })
     const [search, setSearch] = useState('')
+    const titleRef = useRef(null)
 
     useEffect(() => {
     localStorage.setItem('notes', JSON.stringify(notes))
@@ -30,7 +30,6 @@ function Notes() {
     useEffect(() => {
     const id = setTimeout(() => {
       localStorage.setItem('draft', JSON.stringify(form))
-      console.log('draft saved:', form.title)
       }, 1000)
       return () => clearTimeout(id)
     }, [form])
@@ -46,6 +45,7 @@ function Notes() {
         if (title === '' || body === '') return
         setNotes([...notes, { id: Date.now(), title, body }])
         setForm({ title: '', body: '' })
+        titleRef.current.focus()
     }
         function handleDelete(id) {
         setNotes(notes.filter((note) => note.id !== id))
@@ -72,6 +72,7 @@ function Notes() {
                 <form onSubmit={handleSubmit} className="grid gap-3">
                     <p className="text-[13px] font-normal tracking-wide text-[#949494]">NEW NOTE</p>
                     <input
+                        ref={titleRef}
                         name="title"
                         value={form.title}
                         onChange={handleChange}
